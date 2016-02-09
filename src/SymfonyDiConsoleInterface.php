@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 interface SymfonyDiConsoleInterface
 {
     /**
-     * @return SymfonyDiConsoleInterface
+     * @return SymfonyConsoleInterface
      */
     public static function getInstance();
 

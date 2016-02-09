@@ -1,0 +1,36 @@
+{
+    "name" : "fezfez/symfony-console-di",
+    "description" : "Use symfony console with DI",
+    "type" : "library",
+    "authors" : [
+        {
+            "name" : "Stéphane Demonchaux",
+            "email" : "demonchaux.stephane@gmail.com"
+        }
+    ],
+    "keywords" : [
+        "symfony",
+        "console",
+        "di"
+    ],
+    "homepage" : "https://github.com/fezfez/symfony-console-di",
+    "require": {
+        "symfony/console": "^3.0"
+    },
+    "require-dev" : {
+        "phpunit/phpunit" : "4.8.*"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "SymfonyDiConsole\\" : "src/"
+        }
+    },
+    "support" : {
+        "source" : "https://github.com/fezfez/symfony-console-di",
+        "email" : "demonchaux.stephane@gmail.com",
+        "issues" : "https://github.com/fezfez/symfony-console-di/issues",
+        "wiki" : "https://github.com/fezfez/symfony-console-di/blob/master/README.md"
+    },
+    "minimum-stability" : "dev",
+    "prefer-stable" : true
+}

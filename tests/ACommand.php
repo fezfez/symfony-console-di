@@ -9,7 +9,7 @@ use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function is_string;
+use function is_array;
 
 class ACommand implements Command
 {
@@ -31,21 +31,21 @@ class ACommand implements Command
     {
         $arg = $input->getArgument($name);
 
-        if (! is_string($arg)) {
+        if (is_array($arg)) {
             throw new RuntimeException();
         }
 
-        return $arg;
+        return (string) $arg;
     }
 
     private function getOptiontAsString(InputInterface $input, string $name): string
     {
         $arg = $input->getOption($name);
 
-        if (! is_string($arg)) {
+        if (is_array($arg)) {
             throw new RuntimeException();
         }
 
-        return $arg;
+        return (string) $arg;
     }
 }

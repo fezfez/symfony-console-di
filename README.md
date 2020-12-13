@@ -11,62 +11,61 @@ Symfony console with dependency injection capability and lazy loading
 
 ```php
 
-use SymfonyDiConsole\SymfonyDiConsoleInterface;
-use SymfonyDiConsole\SymfonyConsoleInterface;
-use SymfonyDiConsole\SymfonyConsoleDiDto;
-use SymfonyDiConsole\CommandBuilder;
+use Fezfez\SymfonyDiConsole\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Application;
 
-class ACommand implements SymfonyConsoleInterface
+class ACommand implements Command
 {
-    private $adependency;
-    public function __construct($adependency)
+    private string $dependency;
+
+    public function __construct(string $dependency)
     {
-        $this->adependency = $adependency;
+        $this->dependency = $dependency;
     }
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $ouput
-     */
-    public function execute(InputInterface $input, OutputInterface $output)
+
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->write($this->adependency . 'hola' . $input->getArgument('hi') . $input->getOption('anoption'));
+        $output->write($this->dependency . 'hola' . $input->getArgument('hi') . $input->getOption('anoption'));
+
+        return 1;
     }
 }
+```
 
-class TestCommand implements SymfonyDiConsoleInterface
+```php
+
+use Fezfez\SymfonyDiConsole\Command;
+use Fezfez\SymfonyDiConsole\CommandDefinition;
+use Fezfez\SymfonyDiConsole\CommandFactory;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+
+class TestCommandFactory implements CommandFactory
 {
-    /**
-     * @return SymfonyDiConsoleInterface
-     */
-    public static function getInstance()
+    public function createCommand(ContainerInterface $container): Command
     {
         echo 'Not call !';
         return new ACommand('hola');
     }
-    /**
-     * @return SymfonyConsoleDiDto
-    */
-    public static function configure()
+
+    public function configure(): CommandDefinition
     {
         echo 'call !';
-        $dto = new SymfonyConsoleDiDto('test', 'this is a sample');
-        $dto->addArgument('hi');
-        $dto->addOption('anoption');
+        $dto = new CommandDefinition('test', 'this is a sample');
+        $dto->addArgument(new InputArgument('hi'));
+        $dto->addOption(new InputOption('anoption'));
+
         return $dto;
     }
 }
 
+```
+
+```php
 $application = new Application('My app');
-$application->add(CommandBuilder::build('TestCommand'));
-
-$output = new ConsoleOutput();
-$input  = new ArgvInput();
-
-$cli->run($input, $output);
+$application->add(CommandBuilder::build(TestCommandFactory::class, $container));
+$application->run();
 // output : call !
 ```

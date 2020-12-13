@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * This file is part of the Symfony Console DI package.
  *
@@ -7,49 +10,38 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace SymfonyDiConsole;
 
+namespace Fezfez\SymfonyDiConsole;
+
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class BaseCommand extends Command
 {
-    /**
-     * @var string
-     */
-    private $diConsoleCommandClass;
+    private CommandFactory $diConsoleCommandClass;
+    private ContainerInterface $container;
 
-    /**
-     * @param string $command
-     */
-    public function __construct($diConsoleCommandClass)
+    public function __construct(CommandFactory $diConsoleCommandClass, ContainerInterface $container)
     {
         $this->diConsoleCommandClass = $diConsoleCommandClass;
+        $this->container             = $container;
 
         parent::__construct();
     }
 
-    /* (non-PHPdoc)
-     * @see \Symfony\Component\Console\Command\Command::configure()
-     */
-    protected function configure()
+    protected function configure(): void
     {
-        $diConsoleCommandClass = $this->diConsoleCommandClass;
-        $config                = $diConsoleCommandClass::configure();
+        $config = $this->diConsoleCommandClass->configure();
 
         $this->setDefinition($config->getDefinition())
              ->setDescription($config->getDescription())
              ->setName($config->getName());
     }
 
-    /* (non-PHPdoc)
-     * @see \Symfony\Component\Console\Command\Command::execute()
-     */
-    public function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $diConsoleCommandClass = $this->diConsoleCommandClass;
-
-        $diConsoleCommandClass::getInstance()->execute($input, $output);
+        return $this->diConsoleCommandClass->createCommand($this->container)->execute($input, $output);
     }
 }
